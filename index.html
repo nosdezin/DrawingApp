@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawing App</title>
+    <style>
+        *{
+            box-sizing: border-box;
+        }
+
+        body{
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin:0;
+            min-height: 100vh;
+        }
+
+        canvas{
+            border: 2px solid rgb(15, 255, 7);
+        }
+
+        .toolbox{
+            background-color: rgb(15, 255, 7);
+            border: 1px solid rgb(15, 255, 7);
+            display: flex;
+            padding: 1rem;
+            width: 505px;
+        }
+
+        .toolbox > *{
+            background-color: white;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            padding: .25rem;
+            margin: .25rem;
+            height: 50px;
+            width: 504px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <div class="toolbox">
+        <button id="decrease">-</button>
+        <span id="size">5</span>
+        <button id="increase">+</button>
+        <input type="color" id="color">
+        <button id="clear">X</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const increaseBTN = document.getElementById("increase");
+        const decreaseBTN = document.getElementById("decrease");
+        const sizeEl = document.getElementById("size");
+        const colorEl = document.getElementById("color");
+        const clear = document.getElementById("clear");
+        const ctx = canvas.getContext('2d');
+
+        let size = 5;
+        let isPressed = false
+        let color = "black";
+        let x = undefined
+        let y = undefined
+
+        canvas.addEventListener("mousedown",(e) =>{
+            isPressed = true;
+
+            x = e.offsetX;
+            y = e.offsetY;
+        });
+
+        canvas.addEventListener("mouseup",(e) =>{
+            isPressed = false;
+
+            x = e.offsetX;
+            y = e.offsetY;
+        });
+
+        canvas.addEventListener("mousemove",(e) =>{
+            if(isPressed){
+                const x2 = e.offsetX;
+                const y2 = e.offsetY;
+
+                drawCircle(x2, y2);
+                drawLine(x, y, x2, y2)
+                x = x2;
+                y = y2;
+            }
+        });
+
+        function drawCircle(x,y){
+            ctx.beginPath();
+            ctx.arc(x,y,size, 0,Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function drawLine(x1,y1,x2,y2){
+            ctx.beginPath();
+            ctx.moveTo(x1,y2);
+            ctx.lineTo(x2,y2);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = size * 2;
+            ctx.stroke();
+        }
+
+        increaseBTN.addEventListener("click", () =>{
+            size += 5;
+            if(size > 50){
+                size = 50;
+            }
+
+            updateSizeOnScreen();
+        });
+
+        decreaseBTN.addEventListener("click", () =>{
+            size -= 5;
+            if(size < 5){
+                size = 5;
+            }
+
+            updateSizeOnScreen();
+        });
+
+        colorEl.addEventListener("change", (e) =>{
+            color = e.target.value;
+        });
+
+        clear.addEventListener("click", () =>{
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+        });
+
+        function updateSizeOnScreen(){
+            sizeEl.innerText = size;
+        }
+    </script>
+</body>
+</html>
